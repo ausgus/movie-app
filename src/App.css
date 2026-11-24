@@ -1,0 +1,670 @@
+/* 1. 공통 화면: 원본 동영상 파일 대신 CSS로 표현한 극장 커튼입니다. */
+.app-layout {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+}
+
+.cinema-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgb(10 3 6 / 15%), rgb(10 3 6 / 70%)),
+    repeating-linear-gradient(90deg, #260d15 0%, #601b28 2%, #82313b 3%, #41111f 5%, #1f0912 6.5%, #712330 8%);
+}
+
+.cinema-backdrop::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: radial-gradient(ellipse at 50% 0%, rgb(255 180 120 / 13%), transparent 70%);
+  box-shadow: inset 0 0 180px 60px rgb(0 0 0 / 35%);
+}
+
+
+
+/* 2. 헤더: flex로 로고와 메뉴를 양 끝에 배치합니다. */
+.app-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 50;
+  height: var(--header-height);
+  color: white;
+  background: rgb(15 9 12 / 78%);
+  border-bottom: 1px solid rgb(255 255 255 / 12%);
+  backdrop-filter: blur(12px);
+}
+
+.app-header__inner,
+.app-footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(1440px, calc(100% - 64px));
+  height: 100%;
+  margin: 0 auto;
+}
+
+.brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+}
+
+.brand a,
+.main-nav,
+.nav-link {
+  display: flex;
+  align-items: center;
+}
+
+.brand a {
+  gap: 10px;
+}
+
+.brand svg {
+  color: #f1a1b6;
+}
+
+.main-nav {
+  height: 100%;
+  gap: 10px;
+}
+
+.nav-link {
+  justify-content: center;
+  gap: 8px;
+  min-width: 82px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  color: #e9dfe3;
+  font-size: 0.9375rem;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.nav-link:hover {
+  background: rgb(255 255 255 / 10%);
+}
+
+.nav-link.active {
+  color: #ffbbd0;
+  background: rgb(180 56 92 / 24%);
+}
+
+/* 3. 페이지 공통: 고정 헤더와 푸터의 높이만큼 공간을 비워 둡니다. */
+.app-main {
+  min-height: 100vh;
+  padding-top: var(--header-height);
+  padding-bottom: calc(var(--footer-height) + 32px);
+}
+
+.page {
+  width: min(1440px, calc(100% - 64px));
+  margin: 0 auto;
+}
+
+.page-heading {
+  padding: 48px 0 34px;
+  text-align: center;
+  color: white;
+}
+
+.page-heading__eyebrow {
+  margin-bottom: 12px;
+  color: #f2b1be;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+
+.page-heading h2 {
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  font-weight: 650;
+  line-height: 1.45;
+  word-break: keep-all;
+  letter-spacing: -0.04em;
+  text-shadow: 0 2px 10px rgb(0 0 0 / 30%);
+}
+
+.page-heading__description {
+  margin-top: 12px;
+  color: #e0d1d5;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.demo-notice {
+  margin: 0 0 20px;
+  color: #e8d4da;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.results-count {
+  margin: 0 0 20px;
+  color: #efdee4;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.results-count strong {
+  padding-left: 4px;
+  color: #ffbbd0;
+  font-weight: 600;
+}
+
+/* 4. 영화 목록: 화면 크기에 따라 2 / 3 / 4 / 5열로 바뀝니다. */
+.movies-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.movie-card {
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgb(0 0 0 / 18%);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.movie-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgb(0 0 0 / 30%);
+}
+
+
+.movie-card__link {
+  display: block;
+  height: 100%;
+}
+
+
+.movie-card__poster-wrap {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 2 / 3;
+  background: #e8e0e2;
+}
+
+.movie-card__poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.movie-card__favorite {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: #b42c55;
+  background: white;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 15%);
+}
+
+.movie-card__body {
+  padding: 18px 16px 20px;
+}
+
+.movie-card__heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.movie-card__heading h3 {
+  flex: 1;
+  min-width: 0;
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.rating {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 7px;
+  border-radius: 6px;
+  color: #a02750;
+  background: #fbe2eb;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.movie-card__overview {
+  min-height: 4.8em;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+/* 5. 버튼: DaisyUI의 btn 대신 직접 작성한 기본 CSS입니다. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 12px 22px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.btn--primary {
+  color: white;
+  background: var(--color-primary);
+}
+
+.btn--primary:hover {
+  background: var(--color-primary-dark);
+}
+
+.btn--secondary {
+  color: #66565d;
+  border-color: #d6c9ce;
+  background: white;
+}
+
+.btn--secondary:hover {
+  background: #f7f1f3;
+}
+
+/* 6. 검색창 */
+.search-form {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  width: min(620px, 100%);
+  margin: 0 auto 40px;
+}
+
+.search-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.search-input-wrap > svg {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  color: #8a747d;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.search-input {
+  width: 100%;
+  min-height: 50px;
+  padding: 13px 14px 13px 46px;
+  border: 1px solid #eadde2;
+  border-radius: 8px;
+  color: #30282b;
+  background: white;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.search-input::placeholder {
+  color: #85767c;
+}
+
+/* 7. 영화 상세: 작은 화면에서는 포스터와 설명을 세로로 배치합니다. */
+.page--detail {
+  max-width: 960px;
+}
+
+.page-heading--compact {
+  padding-bottom: 28px;
+}
+
+.movie-detail {
+  display: flex;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 10px 36px rgb(0 0 0 / 25%);
+}
+
+.movie-detail__poster {
+  align-self: stretch;
+  width: 36%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+}
+
+.movie-detail__body {
+  flex: 1;
+  min-width: 0;
+  padding: 38px 36px;
+}
+
+.movie-detail__original-title {
+  margin-bottom: 8px;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.movie-detail__body h3 {
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  line-height: 1.4;
+  letter-spacing: -0.04em;
+  word-break: keep-all;
+}
+
+.movie-detail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 18px;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.rating--detail {
+  padding: 6px 10px;
+  font-size: 0.875rem;
+}
+
+.genre-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 22px 0 32px;
+}
+
+.genre {
+  padding: 5px 10px;
+  border: 1px solid #e7dde1;
+  border-radius: 5px;
+  color: #7d606b;
+  font-size: 0.8125rem;
+}
+
+.movie-detail__body h4 {
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+.movie-detail__overview {
+  color: #70646a;
+  font-size: 1rem;
+  line-height: 1.9;
+  word-break: keep-all;
+}
+
+.movie-detail__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+/* 8. 로딩 / 빈 목록 / 오류 안내 */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  color: white;
+  background: rgb(12 6 10 / 72%);
+  font-size: 1rem;
+  backdrop-filter: blur(4px);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgb(255 255 255 / 25%);
+  border-top-color: #f1a1b6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.state-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 300px;
+  padding: 48px 24px;
+  border: 1px solid rgb(255 255 255 / 15%);
+  border-radius: 12px;
+  color: white;
+  background: rgb(24 12 18 / 50%);
+  text-align: center;
+}
+
+.state-message > svg {
+  margin-bottom: 8px;
+  color: #e0a3b4;
+}
+
+.state-message h3 {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.state-message p {
+  color: #dfccd3;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.state-message .btn {
+  margin-top: 8px;
+}
+
+.error-notice {
+  margin-bottom: 24px;
+  padding: 16px;
+  border-radius: 8px;
+  color: #fff0f3;
+  background: #76283f;
+  line-height: 1.6;
+}
+
+/* 9. 하단 로그인 영역 */
+.app-footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  height: var(--footer-height);
+  padding-bottom: env(safe-area-inset-bottom);
+  color: white;
+  background: rgb(18 11 15 / 90%);
+  border-top: 1px solid rgb(255 255 255 / 13%);
+  backdrop-filter: blur(16px);
+}
+
+.auth-status,
+.footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #73616b;
+  border-radius: 50%;
+  color: #d7c4ce;
+  background: #3d2c36;
+}
+
+.avatar--online {
+  border-color: #c3ab61;
+  color: #f4df98;
+  background: #514525;
+}
+
+.auth-status__title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.auth-status__description {
+  margin-top: 5px;
+  color: #c7b7bf;
+  font-size: 0.8125rem;
+}
+
+.data-source {
+  color: #c7b7bf;
+  font-size: 0.8125rem;
+}
+
+.btn--login {
+  border-color: #795361;
+  color: #f9e0ea;
+  background: #55303f;
+}
+
+.btn--login:hover {
+  background: #744256;
+}
+
+.tmdb-credit {
+  margin-top: 36px;
+  color: #d2bfc6;
+  font-size: 0.75rem;
+  line-height: 1.8;
+  text-align: center;
+}
+
+.tmdb-credit a {
+  margin-left: 6px;
+  color: #eee2e7;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tmdb-credit span {
+  display: block;
+}
+
+
+@media (min-width: 640px) {
+  .movies-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+  .movies-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1280px) {
+  .movies-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+
+@media (max-width: 767px) {
+  :root { --header-height: 80px; }
+
+  .app-header__inner,
+  .app-footer__inner,
+  .page { width: calc(100% - 32px); }
+
+  .brand { font-size: 1.25rem; }
+
+  .brand a { gap: 7px; }
+
+  .brand svg { width: 25px; height: 25px; }
+
+  .main-nav { gap: 4px; }
+
+  .nav-link { flex-direction: column; gap: 4px; min-width: 52px; padding: 8px 10px; font-size: 0.875rem; white-space: nowrap; }
+
+  .nav-link svg { width: 20px; height: 20px; }
+
+  .page-heading { padding: 34px 0 28px; }
+
+  .page-heading h2 { padding: 0 8px; }
+
+  .page-heading__description { font-size: 0.875rem; }
+
+  .movies-grid { gap: 16px; }
+
+  .movie-card { border-radius: 9px; }
+  
+  .movie-card__body { padding: 13px 12px 16px; }
+
+  .movie-card__heading { flex-wrap: wrap; gap: 6px; }
+
+  .movie-card__heading h3 { flex-basis: 100%; font-size: 0.9375rem; }
+
+  .movie-card__overview { font-size: 0.875rem; }
+
+  .search-form { gap: 8px; }
+
+  .search-form .btn { padding-right: 16px; padding-left: 16px; }
+
+  .movie-detail { flex-direction: column; }
+
+  .movie-detail__poster { width: min(100%, 320px); align-self: center; }
+  
+  .movie-detail__body { padding: 28px 24px; }
+
+  .genre-list { margin-bottom: 24px; }
+
+  .auth-status { gap: 10px; }
+  
+  .auth-status__description { display: none; }
+
+  .footer-actions { gap: 12px; }
+
+  .btn--login { padding: 10px 16px; }
+
+  .tmdb-credit { margin-top: 28px; }
+}
+
+@media (max-width: 374px) {
+  .nav-link { min-width: 48px; padding: 8px; }
+
+  .brand a { gap: 5px; }
+
+  .brand svg { width: 22px; }
+
+  .data-source { display: none; }
+
+  .movies-grid { gap: 12px; }
+}
