@@ -46,19 +46,20 @@ function DetailPage() {
 
   return (
     <section className="page">
-      <div className="pageheading page-heading--compact">
+      <div className="page-heading page-heading--compact">
         <p className="page-heading__eyebrow">이 영화의 이야기</p>
         <h2>영화 상세 정보</h2>
       </div>
 
       <article className="movie-detail">
         <img
+        className="movie-detail__poster"
         src={getPosterUrl(movie)}
         alt={`${movie.title} 포스터`}
         width={400} height={600}
         onError={(event) => {
-          if (event.currentTarget.getAttribute('src') !== '/image/no-image.svg') {
-            event.currentTarget.src = '/image/no-image.svg';
+          if (event.currentTarget.getAttribute('src') !== '/images/no-image.svg') {
+            event.currentTarget.src = '/images/no-image.svg';
           }
         }}
         />
@@ -67,8 +68,8 @@ function DetailPage() {
           <p className="movie-detail__original-title">{movie.original_title}</p>
           <h3>{movie.title}</h3>
           <div className="movie-detail__meta">
-            <span className="rating rating-detail"><Star size={15} fill="currentColor" />평점 {Number(movie.vote_average || 0).toFixed(1)}</span>
-            {movie.relese_data && <span>{movie.relese_data.slice(0, 4)}년</span>}
+            <span className="rating rating--detail"><Star size={15} fill="currentColor" />평점 {Number(movie.vote_average || 0).toFixed(1)}</span>
+            {movie.relese_data && <span>{movie.release_data.slice(0, 4)}년</span>}
             {movie.runtime > 0 && <span>{movie.runtime}분</span>}
           </div>
 
@@ -78,7 +79,7 @@ function DetailPage() {
 
           <h4>줄거리</h4>
           <p className="movie-detail__overview">{movie.overview || '아직 등록된 줄거리가 없습니다.'}</p>
-          <div className="movie-detail__action">
+          <div className="movie-detail__actions">
             <button className="btn btn--secondary" type="button" onClick={onBackClick}>뒤로가기</button>
             <button className="btn btn--primary" type="button" onClick={onFavoriteClick}>
               <Heart size={19} fill={isFavorite(movie.id) ? 'currentColor' : 'none'} />
