@@ -1,9 +1,11 @@
+
+import { supabase } from '../services/supabase';
 import { useEffect } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Clapperboard, Heart, House, LogIn, LogOut, Search, UserRound } from 'lucide-react';
+import { Film, Heart, House, LogIn, LogOut, Search, UserRound } from 'lucide-react';
 import { toast } from 'sonner';
 
-const AppLayout = ({ authenticate, setAuthenticate }) => {
+const AppLayout = ({ authenticate }) => {
   
   const navigate = useNavigate();
   const { pathname, search } = useLocation();
@@ -12,14 +14,21 @@ const AppLayout = ({ authenticate, setAuthenticate }) => {
     window.scrollTo(0, 0);
   }, [pathname, search]);
 
-  const onButtonClick = () => {
-    setAuthenticate(!authenticate);
-    if (authenticate) {
-      navigate('/');
-      toast.success('로그아웃 되었습니다.');
-    } else {
-      toast.success('로그인 되었습니다.');
+  const onButtonClick = async () => {
+    if (!authenticate) {
+      navigate('/login');
+      return
     }
+
+    const { error } = await supabase.auth.signOut({ scope: 'local'});
+
+    if (error) {
+      toast.error('로그아웃 실패');
+      return;
+    }
+
+    navigate('/', { replace: true });
+    toast.success('로그아웃 되었습니다.');
   };
 
   return(
@@ -29,7 +38,7 @@ const AppLayout = ({ authenticate, setAuthenticate }) => {
       <header className="app-header">
         <div className="app-header__inner">
           <h1 className="brand">
-            <Link to="/"><Clapperboard size={30} /></Link>
+            <Link to="/"><Film size={30} /></Link>
           </h1>
           <nav className="main-nav">
             <NavLink className="nav-link" to="/" end>

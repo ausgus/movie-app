@@ -2,10 +2,11 @@
 :root {
   font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
   color: #30282b;
-  background: #241015;
+  background: var(--color-page-background);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  --color-page-background: #141414;
   --color-primary: #a12648;
   --color-primary-dark: #7d1734;
   --color-muted: #766d71;

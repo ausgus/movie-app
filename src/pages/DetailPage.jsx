@@ -1,5 +1,6 @@
 
 
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Heart, Star } from "lucide-react";
 import { toast } from "sonner";
@@ -16,20 +17,31 @@ function DetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { movie, loading, error } = useMovieDetail(id);
-  const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+  const { isFavorite, addFavorite, removeFavorite, favoritesReady } = useFavorites();
+  const [favoritePending, setFavoritePending] = useState(false);
 
   const onBackClick = () => {
     if (window.history.state?.idx > 0) navigate(-1);
     else navigate('/');
   };
 
-  const onFavoriteClick = () => {
-    if (isFavorite(movie.id)) {
-      removeFavorite(movie.id);
-      toast.success('찜 목록에서 삭제하였습니다.');
-    } else {
-      addFavorite(movie.id);
-      toast.success('찜 목록에 추가하였습니다.');
+  const onFavoriteClick = async () => {
+
+    setFavoritePending(true);
+
+
+    try {
+      if (isFavorite(movie.id)) {
+        await removeFavorite(movie.id);
+        toast.success('찜 목록에서 삭제하였습니다.');
+      } else {
+        await addFavorite(movie.id);
+        toast.success('찜 목록에 추가하였습니다.');
+      }
+    } catch {
+      toast.error('찜 목록을 변경하지 못했습니다.');
+    } finally {
+      setFavoritePending(false);
     }
   };
 
@@ -81,7 +93,12 @@ function DetailPage() {
           <p className="movie-detail__overview">{movie.overview || '아직 등록된 줄거리가 없습니다.'}</p>
           <div className="movie-detail__actions">
             <button className="btn btn--secondary" type="button" onClick={onBackClick}>뒤로가기</button>
-            <button className="btn btn--primary" type="button" onClick={onFavoriteClick}>
+            <button
+              className="btn btn--primary"
+              type="button"
+              onClick={onFavoriteClick}
+              disabled={!favoritesReady || favoritePending}
+            >
               <Heart size={19} fill={isFavorite(movie.id) ? 'currentColor' : 'none'} />
               {isFavorite(movie.id) ? '좋아요 취소' : '좋아요'}
             </button>

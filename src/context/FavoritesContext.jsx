@@ -1,53 +1,77 @@
 
 
+import { supabase } from "../services/supabase";
 import { useEffect, useState } from "react";
 import { toast } from 'sonner';
 import { FavoritesContext } from './favorites';
 
-const STORAGE_KEY = 'netflix-app-favorites';
 
-
-function readFavorites() {
-  try {
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-
-    if (!Array.isArray(stored)) return [];
-
-    return [...new Set(stored.filter((id) => Number.isInteger(id) && id > 0))]
-  } catch {
-    return [];
-  }
-}
-
+export function FavoritesProvider({ children, userId }) {
   
-export function FavoritesProvider({ children }) {
-  //첫 실행 때만 저장된 찜목록을 읽음
-
-  const [favorites, setFavorites] = useState(readFavorites);
+  const [favorites, setFavorites] = useState([]);
+  const [favoritesReady, setFavoritesReady] = useState(false);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
-    } catch {
-      toast.warning('브라우저에 찜 목록을 저장할 수 없습니다.', { id: 'storage-error' });
+    if (!userId) return;
+
+    const controller = new AbortController();
+
+    async function loadFavorites() {
+      
+      const { data, error } = await supabase
+        .from('favorites')
+        .select('movie_id')
+        .eq('user_id', userId)
+        .abortSignal(controller.signal);
+
+      if (controller.signal.aborted) return;
+
+      if (error) {
+        toast.error('찜 목록을 불러오지 못했습니다.');
+        console.error(error);
+        return;
+      }
+
+      const ids = data.map((row) => row.movie_id);
+      setFavorites(ids);
+      setFavoritesReady(true);
+      console.log('DB에서 읽은 찜 목록', ids);
     }
-  }, [favorites]);
+
+    loadFavorites();
+    return () => controller.abort();
+  }, [userId]);
 
 
-  const addFavorite = (id) => {
-    setFavorites((prev) => prev.includes(id) ? prev : [...prev, id]);
-  }
+  const addFavorite = async (id) => {
+    const { error } = await supabase.from('favorites').upsert(
+      { user_id: userId, movie_id: id },
+      { onConflict: 'user_id,movie_id', ignoreDuplicates: true },
+    );
+
+    if (error) throw error;
+
+    setFavorites((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  };
 
 
-  const removeFavorite = (id) => {
+  const removeFavorite = async (id) => {
+    const { error } = await supabase
+      .from('favorites')
+      .delete()
+      .eq('user_id', userId)
+      .eq('movie_id', id);
+
+    if (error) throw error;
+
     setFavorites((prev) => prev.filter((movieId) => movieId !== id));
-  }
+  };
 
   
   const isFavorite = (id) => favorites.includes(id);
 
   return (
-    <FavoritesContext.Provider value={{ favorites, addFavorite, removeFavorite, isFavorite }}>
+    <FavoritesContext.Provider value={{ favorites, favoritesReady, addFavorite, removeFavorite, isFavorite }}>
       {children}
     </FavoritesContext.Provider>
   );

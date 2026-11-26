@@ -40,10 +40,10 @@ const SearchPage = () => {
         <h2>영화 검색</h2>
       </div>
 
-      <form className="serch-form" onSubmit={onSubmit}>
-        <div className="serch-input-wrap">
+      <form className="search-form" onSubmit={onSubmit}>
+        <div className="search-input-wrap">
           <Search size={21} />
-          <input type="search" id="movie-search" placeholder="영화 제목을 입력해주십시오." ref={serchRef} key={query} defaultValue={query} autoComplete="off" />
+          <input type="search" id="movie-search" className="search-input" placeholder="영화 제목을 입력해주십시오." ref={serchRef} key={query} defaultValue={query} autoComplete="off" />
         </div>
         <button className="btn btn--primary" type="submit">검색</button>
       </form>
