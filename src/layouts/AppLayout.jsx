@@ -1,4 +1,5 @@
 
+import { isDemoMode } from '../services/api';
 import { supabase } from '../services/supabase';
 import { useEffect } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
@@ -78,7 +79,7 @@ const AppLayout = ({ authenticate }) => {
 
 
           <div className="footer-actions">
-            <span className="data-source">예제 영화</span>
+            {isDemoMode ? <span className="data-source">예제 영화</span> : ''}
             <button className="btn btn--login" type="button" onClick={onButtonClick}>
               {authenticate ? <LogOut size={19} /> : <LogIn size={19} />}
               {authenticate ? '로그아웃' : '로그인'}
