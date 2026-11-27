@@ -1,21 +1,14 @@
 import { demoMovies } from '../data/demoMovies';
 
-const BASE_URL = 'https://api.themoviedb.org/3';
-const ACCESS_TOKEN = import.meta.env.VITE_TMDB_ACCESS_TOKEN?.trim();
-
-export const isDemoMode = !ACCESS_TOKEN;
+export const isDemoMode =
+  import.meta.env.DEV || import.meta.env.VITE_MOVIE_DEMO === 'true';
 
 
 
 
 async function request(path, { signal } = {}) {
-  const response = await fetch(`${BASE_URL}${path}`, {
-    signal,
-    headers: {
-      accept: 'application/json',
-      Authorization: `Bearer ${ACCESS_TOKEN}`,
-    },
-  });
+  const params = new URLSearchParams({ path });
+  const response = await fetch(`/api/movies?${params}`, { signal });
 
 
   if (!response.ok) {
