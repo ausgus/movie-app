@@ -51,9 +51,9 @@ function App() {
             <Route path='/' element={<LandingPage />} />
             <Route path='/signup' element={<SignupPage />} />
             <Route path='/login' element={<LoginPage />} />
+            <Route path='/search' element={<SearchPage />} />
             <Route element={<ProtectedRoutes authenticate={authenticate} />}>
               <Route path='/movie/:id' element={<DetailPage />} />
-              <Route path='/search' element={<SearchPage />} />
               <Route path='/favorites' element={<Favorites />} />
             </Route>
             <Route path='*'element={
