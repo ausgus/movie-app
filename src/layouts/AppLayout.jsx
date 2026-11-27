@@ -72,14 +72,14 @@ const AppLayout = ({ authenticate }) => {
 
             <div>
               <p className="auth-status__title">{authenticate ? '온라인' : '오프라인'}</p>
-              <p className="auth-description">{authenticate ? '마음에 드는 영화를 찜해 보세요.' : '로그인하고 더 많은 기능을 누려보세요.'}</p>
+              <p className="auth-status__description">{authenticate ? '마음에 드는 영화를 찜해 보세요.' : '로그인하고 더 많은 기능을 누려보세요.'}</p>
             </div>
           </div>
 
 
           <div className="footer-actions">
             <span className="data-source">예제 영화</span>
-            <button className="btn btb--login" type="button" onClick={onButtonClick}>
+            <button className="btn btn--login" type="button" onClick={onButtonClick}>
               {authenticate ? <LogOut size={19} /> : <LogIn size={19} />}
               {authenticate ? '로그아웃' : '로그인'}
             </button>
